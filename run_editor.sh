@@ -22,5 +22,42 @@ while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 
+# env 
+PROJECT=mdeditor
 
-pnpm install -C $DIR  && pnpm  -C $DIR start --host 0.0.0.0 --port 8005
+PORT=8000
+CONTENT=$DIR/content
+
+NGINX_DOMAIN=$PROJECT
+NGINX_USER=$PROJECT
+NGINX_PSW=$PROJECT
+
+if [[ ! -z "$MDE_PORT" ]]; then PORT=$MDE_PORT;fi
+if [[ ! -z "$MDE_CONTENT" ]]; then CONTENT=$MDE_CONTENT;fi
+if [[ ! -z "$MDE_DOMAIN" ]]; then NGINX_DOMAIN=$MDE_DOMAIN ;fi
+
+if [[ ! -z "$MDE_USER" ]]; then NGINX_USER=$MDE_USER; fi
+if [[ ! -z "$MDE_PSW" ]]; then NGINX_PSW=$MDE_PSW;fi
+
+echo PORT $PORT
+echo CONTENT $CONTENT
+echo NGINX_DOMAIN $NGINX_DOMAIN
+
+echo NGINX_USER $NGINX_USER
+echo NGINX_PSW $NGINX_PSW
+
+if [ ! -f /etc/nginx/.htpasswd ]; then sudo htpasswd -bcB -C 10 /etc/nginx/.htpasswd $NGINX_USER $NGINX_PSW ; else sudo htpasswd -bB -C 10 /etc/nginx/.htpasswd $NGINX_USER $NGINX_PSW ;fi
+
+
+sudo cp $DIR/default.conf /etc/nginx/conf.d/default.conf
+
+sed "/proxy_pass/s/127.0.0.1:[0-9]\+/127.0.0.1:$PORT/"  $DIR/location-$PROJECT.conf  | sudo tee /etc/nginx/locations/location-$PROJECT-$NGINX_DOMAIN.conf
+sudo sed -i "/$PROJECT/s/$PROJECT/$NGINX_DOMAIN/" /etc/nginx/locations/location-$PROJECT-$NGINX_DOMAIN.conf
+
+sudo service nginx restart
+sudo nginx -t && sudo systemctl reload nginx
+
+
+# pnpm install -C $DIR  && pnpm  -C $DIR start --host 0.0.0.0 --port 8005
+
+docker run -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm  node:22  bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base $NGINX_DOMAIN"
