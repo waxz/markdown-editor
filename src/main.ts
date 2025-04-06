@@ -75,21 +75,4 @@ crepe.create().then(() => {  console.log("Editor created");});
 //const md = crepe.getMarkdown();
 //console.log(md);
 
-const defaultValue = "# Hello milkdown";
-
-const editor = await Editor.make().config((ctx) => {
-  ctx.set(defaultValueCtx, defaultValue);
-})  
-
-.create();
-
-
-editor.action(insert("# New Heading"));
-
-editor.action(replaceAll("# New Document"));
-
-await editor.create();
-
-// This equals to call `editor.destroy` and `editor.create` again.
-await editor.create();
 
