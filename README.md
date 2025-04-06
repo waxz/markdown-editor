@@ -6,8 +6,14 @@ A example for using crepe editor, which is a markdown editor based on Milkdown.
 
 ## Getting Started
 
-1. Clone the repo.
 
-2. Install dependencies by `pnpm install`.
+```bash
+pnpm install  && pnpm start --host 0.0.0.0 --port 8005 --base mdeditor
+```
 
-3. Run the example by `pnpm start`.
+or
+
+```bash
+./run_editor.sh
+
+```
