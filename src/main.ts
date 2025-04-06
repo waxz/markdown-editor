@@ -1,8 +1,16 @@
+
 import { Crepe } from '@milkdown/crepe';
 import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
 import { insert, replaceAll } from "@milkdown/kit/utils";
 import '@milkdown/crepe/theme/common/style.css'
 import '@milkdown/crepe/theme/frame.css';
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 
 // 🔗 Get current page URL
 const currentUrl = window.location.href;
@@ -24,7 +32,7 @@ const crepe = new Crepe({
 });
  
 
-crepe.create().then(() => { 
+await crepe.create().then(() => { 
   console.log("Editor created");
 
   // Apply replace and insert actions
@@ -50,3 +58,10 @@ crepe.create().then(() => {
 
 console.log("after Editor create");
 
+
+for(var i = 0 ; i < 100; i++){
+  // Now get updated markdown
+  const updatedMd = crepe.getMarkdown();
+  console.log("Updated Markdown:", updatedMd);
+  await sleep(1000); // Wait for one second
+}
