@@ -1,5 +1,6 @@
 import { Crepe } from '@milkdown/crepe';
 import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
+//import { insert } from "@milkdown/kit/utils";
 
 
 //import { tooltip } from "@milkdown/kit/plugin/tooltip";
@@ -59,6 +60,8 @@ Pink Floyd were founded in 1965 by [Syd Barrett](https://en.wikipedia.org/wiki/
 //  defaultValue: markdown,
 //}).create()
 
+console.log(markdown);
+
 
 const crepe = new Crepe({
   root: '#app',
@@ -70,9 +73,16 @@ const crepe = new Crepe({
 
 //crepe.editor.use(math);
 
-crepe.create().then(() => {  console.log("Editor created");});
+crepe.create().then(() => { 
+ console.log("Editor created");
+  // Now safe to use action
+  crepe.editor.action(insert("some other thing"));
 
-//const md = crepe.getMarkdown();
-//console.log(md);
+  // Also safe to get markdown
+  const md = crepe.getMarkdown();
+  console.log(md);
+});
+
+console.log("after Editor create");
 
 
