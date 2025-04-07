@@ -1,7 +1,22 @@
 
+// 
+//import { createRequire } from 'node:module';
+//const require = createRequire(import.meta.url);
+
+// request
+//var compose = require('request-compose')
+//var Request = compose.Request
+//var Response = compose.Response
+
+
+// milkdown
 import { Crepe } from '@milkdown/crepe';
 import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
 import { insert, replaceAll } from "@milkdown/kit/utils";
+
+import { emoji } from "@milkdown/plugin-emoji";
+
+
 import '@milkdown/crepe/theme/common/style.css'
 import '@milkdown/crepe/theme/frame.css';
 
@@ -15,7 +30,10 @@ function sleep(ms) {
 // 🔗 Get current page URL
 const currentUrl = window.location.href;
 console.log("Current Page URL:", currentUrl);
-
+const browserUserAgent = window.navigator.userAgent;
+console.log("User Agent: ", browserUserAgent );
+const isMObileDevice = navigator.maxTouchPoints > 1;
+console.log("isMObileDevice: ", isMObileDevice);
 
 
 const markdown =
@@ -28,9 +46,30 @@ const crepe = new Crepe({
   defaultValue: markdown,
  features: {
     [Crepe.Feature.Latex]: true,
+[Crepe.Feature.BlockEdit]:true,
+
+
   },
 });
- 
+
+// add plugin
+crepe.editor.use(emoji);
+
+
+function onMarkdownUpdated(e){
+ console.log("onMarkdownUpdated: event:\n", e);
+} 
+
+
+crepe.on((listener) => {
+  listener.markdownUpdated(onMarkdownUpdated);
+//  listener.updated(onDocUpdated);
+//  listener.focus(onFocus);
+//  listener.blur(onBlur);
+  // ...
+});
+
+
 
 await crepe.create().then(() => { 
   console.log("Editor created");
@@ -39,11 +78,12 @@ await crepe.create().then(() => {
 
   crepe.editor.action(replaceAll("# Choose Milkdown Editor Crepe"));
   crepe.editor.action(insert("\nSome other thing"));
-  crepe.editor.action(insert(currentUrl));
+  crepe.editor.action(insert("\nhello " + browserUserAgent + " visit " + currentUrl));
   // Now get updated markdown
   const updatedMd = crepe.getMarkdown();
   console.log("Updated Markdown:", updatedMd);
-  
+
+  //crepe.setReadonly(true);  
   
     // Optional: Live update listener (uncomment to use)
   /*
@@ -59,9 +99,12 @@ await crepe.create().then(() => {
 console.log("after Editor create");
 
 
+
 for(var i = 0 ; i < 100; i++){
   // Now get updated markdown
   const updatedMd = crepe.getMarkdown();
   console.log("Updated Markdown:", updatedMd);
   await sleep(1000); // Wait for one second
 }
+
+

@@ -22,6 +22,20 @@ while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 
+if tty -s; then
+    echo "I am on a TTY"
+    IS_TTY=true
+else
+    echo "I am NOT on a TTY"
+    IS_TTY=false
+
+fi
+
+DOCKER_TTY=""
+if $IS_TTY; then 
+    DOCKER_TTY="-it";
+fi
+
 # env 
 PROJECT=mdeditor
 
@@ -39,13 +53,15 @@ if [[ ! -z "$MDE_DOMAIN" ]]; then NGINX_DOMAIN=$MDE_DOMAIN ;fi
 if [[ ! -z "$MDE_USER" ]]; then NGINX_USER=$MDE_USER; fi
 if [[ ! -z "$MDE_PSW" ]]; then NGINX_PSW=$MDE_PSW;fi
 
+CONATINER_NAME=$PROJECT-$NGINX_DOMAIN
+
 echo PORT $PORT
 echo CONTENT $CONTENT
 echo NGINX_DOMAIN $NGINX_DOMAIN
 
 echo NGINX_USER $NGINX_USER
 echo NGINX_PSW $NGINX_PSW
-
+echo CONATINER_NAME $CONATINER_NAME
 if [ ! -f /etc/nginx/.htpasswd ]; then sudo htpasswd -bcB -C 10 /etc/nginx/.htpasswd $NGINX_USER $NGINX_PSW ; else sudo htpasswd -bB -C 10 /etc/nginx/.htpasswd $NGINX_USER $NGINX_PSW ;fi
 
 
@@ -60,4 +76,4 @@ sudo nginx -t && sudo systemctl reload nginx
 
 # pnpm install -C $DIR  && pnpm  -C $DIR start --host 0.0.0.0 --port 8005
 
-docker run -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm  node:22  bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base $NGINX_DOMAIN"
+docker run --name $CONATINER_NAME -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm  $DOCKER_TTY node:22  bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base $NGINX_DOMAIN"
