@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # npm
+sudo apt install -y npm
 sudo npm i npm@11.2.0 -g
 npm install -g pnpm
 

@@ -42,7 +42,7 @@ except FileNotFoundError:
 bp = Blueprint('auth', __name__,
     #url_prefix = "/auth",
     template_folder='templates',
-    static_folder='static', static_url_path=f'/assets/auth'
+    static_folder='static', static_url_path=f'/{FLASK_BASE_URL}/assets/auth'
 )
 
 
@@ -55,8 +55,12 @@ def load_logged_in_user():
     else:
         g.user = user_id
 
-@bp.route('/login', methods=('GET', 'POST'))
+@bp.route(f'/{FLASK_BASE_URL}/login', methods=('GET', 'POST'))
 def login():
+    base_url = flask.request.base_url
+    hostname = str(urllib.parse.urlparse(base_url).hostname)
+    session["base_url"] = base_url
+    session["hostname"] = hostname
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")       
@@ -74,7 +78,7 @@ def login():
             #return 'Invalid username/password combination'
     return render_template('login.html')
 
-@bp.route('/logout')
+@bp.route(f'/{FLASK_BASE_URL}/logout')
 def logout():
     session.clear()
     return redirect(url_for('auth.login'))

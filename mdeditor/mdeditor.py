@@ -16,8 +16,12 @@ import os
 from pathlib import Path
 
 # Get environment variables.
+FLASK_BASE_URL = os.getenv("FLASK_BASE_URL", "mde")
+print(f"FLASK_BASE_URL: {FLASK_BASE_URL}")
+
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", "0")
 VITE_ORIGIN = os.getenv("VITE_ORIGIN", "http://localhost:8101")
+
 
 # Set application constants.
 is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
@@ -30,7 +34,7 @@ project_path = Path(os.path.dirname(os.path.abspath(__file__)))
 
 bp = Blueprint('mdeditor', __name__,
     template_folder='dist',
-    static_folder='dist/assets', static_url_path='/md/assets'
+    static_folder='dist/assets', static_url_path=f'/{FLASK_BASE_URL}/assets'
 )
 
 
@@ -55,7 +59,7 @@ def login_required(view):
     return wrapped_view
 
 
-@bp.get("/editor")
+@bp.get(f"/{FLASK_BASE_URL}/editor")
 def index():
     if not 'logged_in' in session:
         return redirect(url_for('auth.login'))
@@ -78,7 +82,7 @@ def add_context():
         base_url = flask.request.base_url
         hostname = str(urllib.parse.urlparse(base_url).hostname)        
         print(f"dev_assets:{base_url} {hostname}")
-        return f"/md/assets/{file_path}"
+        return f"/{FLASK_BASE_URL}/assets/{file_path}"
 
 
     return {
