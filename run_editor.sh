@@ -87,4 +87,6 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 #flask --debug --app main run --port $PORT --host 0.0.0.0 
-gunicorn -w 4 --bind 0.0.0.0:$PORT 'main:app'
+echo PORT $PORT 
+echo NGINX_DOMAIN $NGINX_DOMAIN
+gunicorn -w 1 --bind 0.0.0.0:$PORT main:app --env FLASK_BASE_URL="$NGINX_DOMAIN"

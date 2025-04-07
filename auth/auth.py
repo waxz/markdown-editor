@@ -11,6 +11,9 @@ import os
 from pathlib import Path
 
 # Get environment variables.
+FLASK_BASE_URL = os.getenv("FLASK_BASE_URL", "mde")
+print(f"FLASK_BASE_URL: {FLASK_BASE_URL}")
+
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", "0")
 VITE_ORIGIN = os.getenv("VITE_ORIGIN", "http://localhost:8101")
 
@@ -39,7 +42,7 @@ except FileNotFoundError:
 bp = Blueprint('auth', __name__,
     #url_prefix = "/auth",
     template_folder='templates',
-    static_folder='static', static_url_path='/md/assets/auth'
+    static_folder='static', static_url_path=f'/assets/auth'
 )
 
 
@@ -52,7 +55,7 @@ def load_logged_in_user():
     else:
         g.user = user_id
 
-@bp.route('/md/login', methods=('GET', 'POST'))
+@bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
         username = request.form.get("username")
@@ -71,7 +74,7 @@ def login():
             #return 'Invalid username/password combination'
     return render_template('login.html')
 
-@bp.route('/md/logout')
+@bp.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('auth.login'))
@@ -80,13 +83,14 @@ def logout():
 # Add `asset()` function and `is_production` to app context.
 @bp.context_processor
 def add_context():
-    print(f"hostname")
     
     def dev_asset(file_path):
         base_url = flask.request.base_url
         hostname = str(urllib.parse.urlparse(base_url).hostname)        
         print(f"dev_assets:{base_url} {hostname}")
-        return f"/md/assets/auth/{file_path}"
+        path =  f"/{FLASK_BASE_URL}/assets/auth/{file_path}"
+        print(f"dev_asset: {path}")        
+        return path
 
 
     return {

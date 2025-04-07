@@ -55,7 +55,7 @@ def login_required(view):
     return wrapped_view
 
 
-@bp.get("/md/editor")
+@bp.get("/editor")
 def index():
     if not 'logged_in' in session:
         return redirect(url_for('auth.login'))
