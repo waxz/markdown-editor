@@ -17,9 +17,9 @@ PSW_DATA =  [l.strip() for l in PSW_DATA]
 # Set up application.
 app = Flask(
     __name__,
-#    static_url_path="/",
-#    static_folder="public",
-#    template_folder="templates",
+    static_url_path="/",
+    static_folder="public",
+    template_folder="templates",
 )
 sess = Session()
 app.secret_key = 'super secret key' 

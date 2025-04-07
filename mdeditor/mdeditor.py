@@ -3,10 +3,34 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 
+import functools
+import flask,  urllib.parse
+from werkzeug.middleware.proxy_fix import ProxyFix
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
+)
+import hashlib
+
+import json
+import os
+from pathlib import Path
+
+# Get environment variables.
+FLASK_DEBUG = os.getenv("FLASK_DEBUG", "0")
+VITE_ORIGIN = os.getenv("VITE_ORIGIN", "http://localhost:8101")
+
+# Set application constants.
+is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
+is_production = FLASK_DEBUG != "1" or is_gunicorn
+project_path = Path(os.path.dirname(os.path.abspath(__file__)))
+
+
+
+
 
 bp = Blueprint('mdeditor', __name__,
     template_folder='dist',
-    static_folder='dist/assets', static_url_path='/assets'
+    static_folder='dist/assets', static_url_path='/md/assets'
 )
 
 
@@ -31,7 +55,7 @@ def login_required(view):
     return wrapped_view
 
 
-@bp.get("/")
+@bp.get("/md/editor")
 def index():
     if not 'logged_in' in session:
         return redirect(url_for('auth.login'))
@@ -44,3 +68,20 @@ def index():
     msg =  f"base_url:{base_url}, hostname:{hostname}"
     print("msg: ", msg)
     return render_template("index.html")
+    
+# Add `asset()` function and `is_production` to app context.
+@bp.context_processor
+def add_context():
+    print(f"hostname")
+    
+    def dev_asset(file_path):
+        base_url = flask.request.base_url
+        hostname = str(urllib.parse.urlparse(base_url).hostname)        
+        print(f"dev_assets:{base_url} {hostname}")
+        return f"/md/assets/{file_path}"
+
+
+    return {
+        "asset": dev_asset,
+        "is_production":is_production,
+    }

@@ -86,4 +86,5 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-flask --debug --app main run --port $PORT --host 0.0.0.0 
+#flask --debug --app main run --port $PORT --host 0.0.0.0 
+gunicorn -w 4 --bind 0.0.0.0:$PORT 'main:app'
