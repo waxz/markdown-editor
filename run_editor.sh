@@ -76,4 +76,14 @@ sudo nginx -t && sudo systemctl reload nginx
 
 # pnpm install -C $DIR  && pnpm  -C $DIR start --host 0.0.0.0 --port 8005
 
-docker run --name $CONATINER_NAME -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm  $DOCKER_TTY node:22  bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base /$NGINX_DOMAIN"
+#docker run --name $CONATINER_NAME -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm  $DOCKER_TTY node:22  bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base /$NGINX_DOMAIN"
+
+pnpm install
+npm run build
+ln -s  $DIR/dist $DIR/mdeditor/
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+flask --debug --app main run --port $PORT --host 0.0.0.0 

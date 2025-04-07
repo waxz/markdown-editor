@@ -1,5 +1,4 @@
 from flask import Flask, render_template, g, session, request, redirect, url_for, flash
-from assets_blueprint import assets_blueprint
 
 import flask,  urllib.parse
 from flask_session import Session
