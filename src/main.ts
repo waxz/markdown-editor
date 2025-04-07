@@ -7,7 +7,7 @@
 //var compose = require('request-compose')
 //var Request = compose.Request
 //var Response = compose.Response
-
+import './save-button.css';
 
 // milkdown
 import { Crepe } from '@milkdown/crepe';
@@ -70,14 +70,7 @@ crepe.create().then(async  () => {
   // Now get updated markdown
   const updatedMd = crepe.getMarkdown();
   console.log("Updated Markdown:", updatedMd);
-
-for(var i = 0 ; i < 100; i++){
-  // Now get updated markdown
-  const updatedMd = crepe.getMarkdown();
-  console.log("Updated Markdown:", updatedMd);
-  await sleep(1000); // Wait for one second
-}
-
+  await sleep(1);
 
 
   //crepe.setReadonly(true);  
@@ -91,8 +84,80 @@ for(var i = 0 ; i < 100; i++){
     });
   });
   */
+
+
+console.log("btn set");
+// Wait until the DOM is ready
+       if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                // Code to execute after DOM is loaded
+                  console.log("bth run");
+const filenameInput = document.getElementById('filename-input')  as HTMLInputElement;
+
+  const saveBtn = document.getElementById('save-btn');
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      try {
+
+        const filename: string = filenameInput?.value.trim() || "untitled";
+
+        const markdown  = crepe.getMarkdown();
+         console.log("save \n"+ filename + "\n" + markdown);
+        const response = await fetch("/md/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ markdown,filename }),
+        });
+
+        const result = await response.json();
+        alert(result.message || "Saved!");
+      } catch (err) {
+        console.error("Error saving markdown:", err);
+        alert("Failed to save.");
+      }
+    });
+  }
+  
+            });
+        } else {
+            // Code to execute immediately (DOM is already loaded)
+              console.log("bth run");
+  const saveBtn = document.getElementById('save-btn');
+  const filenameInput = document.getElementById('filename-input') as HTMLInputElement;
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      try {
+
+        const filename: string = filenameInput?.value.trim() || "untitled";
+        const markdown  = crepe.getMarkdown();
+         console.log("save \n" + markdown);
+        const response = await fetch(currentUrl+"/md/save", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ markdown,filename }),
+        });
+
+        const result = await response.json();
+        alert(result.message || "Saved!");
+      } catch (err) {
+        console.error("Error saving markdown:", err);
+        alert("Failed to save.");
+      }
+    });
+  }
+  
+        }
+        
+        
+ 
+
+
 });
 
 console.log("after Editor create");
-
-

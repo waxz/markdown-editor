@@ -1,6 +1,6 @@
 import functools , flask ,urllib.parse
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for,jsonify
 )
 
 import functools
@@ -89,3 +89,27 @@ def add_context():
         "asset": dev_asset,
         "is_production":is_production,
     }
+
+@bp.route(f"/{FLASK_BASE_URL}/editor/md/save", methods=["POST"])
+def save_markdown():
+    user_id = session['user_id']
+    data = request.get_json()
+    markdown = data.get("markdown", "")
+
+    filename = data.get("filename", "untitled").strip()
+
+    if not filename:
+        filename = "untitled"
+
+    if not filename.endswith(".md"):
+        filename += ".md"
+
+    safe_name = filename.replace("/", "_")  # avoid path traversal
+    if not markdown:
+        return jsonify({"message": "No markdown received"}), 400
+
+    # Save to file, DB, or wherever you want
+    with open(f"saved/{safe_name}", "w", encoding="utf-8") as f:
+        f.write(markdown)
+
+    return jsonify({"message": "Markdown saved successfully!"})
