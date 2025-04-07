@@ -11,7 +11,7 @@
 
 // milkdown
 import { Crepe } from '@milkdown/crepe';
-import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
+//import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
 import { insert, replaceAll } from "@milkdown/kit/utils";
 
 import { emoji } from "@milkdown/plugin-emoji";
@@ -20,7 +20,7 @@ import { emoji } from "@milkdown/plugin-emoji";
 import '@milkdown/crepe/theme/common/style.css'
 import '@milkdown/crepe/theme/frame.css';
 
-function sleep(ms) {
+function sleep(ms:number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
@@ -56,22 +56,10 @@ const crepe = new Crepe({
 crepe.editor.use(emoji);
 
 
-function onMarkdownUpdated(e){
- console.log("onMarkdownUpdated: event:\n", e);
-} 
-
-
-crepe.on((listener) => {
-  listener.markdownUpdated(onMarkdownUpdated);
-//  listener.updated(onDocUpdated);
-//  listener.focus(onFocus);
-//  listener.blur(onBlur);
-  // ...
-});
 
 
 
-await crepe.create().then(() => { 
+crepe.create().then(async  () => { 
   console.log("Editor created");
 
   // Apply replace and insert actions
@@ -82,6 +70,15 @@ await crepe.create().then(() => {
   // Now get updated markdown
   const updatedMd = crepe.getMarkdown();
   console.log("Updated Markdown:", updatedMd);
+
+for(var i = 0 ; i < 100; i++){
+  // Now get updated markdown
+  const updatedMd = crepe.getMarkdown();
+  console.log("Updated Markdown:", updatedMd);
+  await sleep(1000); // Wait for one second
+}
+
+
 
   //crepe.setReadonly(true);  
   
@@ -97,14 +94,5 @@ await crepe.create().then(() => {
 });
 
 console.log("after Editor create");
-
-
-
-for(var i = 0 ; i < 100; i++){
-  // Now get updated markdown
-  const updatedMd = crepe.getMarkdown();
-  console.log("Updated Markdown:", updatedMd);
-  await sleep(1000); // Wait for one second
-}
 
 
