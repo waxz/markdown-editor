@@ -1,0 +1,38 @@
+.milkdown {
+  .ProseMirror {
+    padding: 5px 5px;
+  }
+}
+
+#save-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+#filename-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#save-btn {
+  background-color: #4CAF50; /* green */
+  color: white;
+  padding: 8px;
+  margin-top: 0rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#save-btn:hover {
+  background-color: #45a049;
+}
+
+#save-btn:active {
+  transform: scale(0.98);
+}

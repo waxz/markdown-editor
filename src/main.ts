@@ -1,14 +1,3 @@
-
-// 
-//import { createRequire } from 'node:module';
-//const require = createRequire(import.meta.url);
-
-// request
-//var compose = require('request-compose')
-//var Request = compose.Request
-//var Response = compose.Response
-import './save-button.css';
-
 // milkdown
 import { Crepe } from '@milkdown/crepe';
 //import { listener, listenerCtx } from "@milkdown/kit/plugin/listener";
@@ -19,6 +8,17 @@ import { emoji } from "@milkdown/plugin-emoji";
 
 import '@milkdown/crepe/theme/common/style.css'
 import '@milkdown/crepe/theme/frame.css';
+
+// If you need to style tables, you should import this css file.
+//import "@milkdown/kit/prose/tables/style/tables.css";
+// You should import these predefined prosemirror css styles.
+//import "@milkdown/kit/prose/view/style/prosemirror.css";
+
+// Your css file.
+
+import './my-theme.css';
+
+
 
 function sleep(ms:number) {
   return new Promise((resolve) => {
@@ -36,6 +36,16 @@ const isMObileDevice = navigator.maxTouchPoints > 1;
 console.log("isMObileDevice: ", isMObileDevice);
 
 
+
+// display
+var save_controls_node = document.getElementById('save-controls');
+if  (save_controls_node){
+  if (save_controls_node.style.display === 'none') {
+    save_controls_node.style.display = 'flex';
+  }
+}
+
+
 const markdown =
   `# Milkdown Editor Crepe
   ### how to use 
@@ -50,6 +60,13 @@ const crepe = new Crepe({
 
 
   },
+featureConfigs: {
+
+ [Crepe.Feature.CodeMirror]:{
+
+}
+
+}
 });
 
 // add plugin
@@ -160,4 +177,4 @@ const filenameInput = document.getElementById('filename-input')  as HTMLInputEle
 
 });
 
-console.log("after Editor create");
+       console.log("after Editor create");
