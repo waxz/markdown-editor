@@ -36,6 +36,12 @@ sess.init_app(app)
 app.register_blueprint(mdeditor.bp, )
 app.register_blueprint(auth.bp)
 
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return redirect(url_for('auth.login'))
+
+
 if __name__ == "__main__":
     # Normal entry point
     app.run()

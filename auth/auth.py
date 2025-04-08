@@ -74,8 +74,11 @@ def login():
             session['user_id'] = username
             return redirect(url_for("mdeditor.index"))
         else:
-            flash('Wrong username or password')
-            #return 'Invalid username/password combination'
+            #flash('Wrong username or password')
+            return 'Invalid username/password combination'
+    else:
+        if session.get('logged_in'):
+            return redirect(url_for('mdeditor.index'))
     return render_template('login.html')
 
 @bp.route(f'/{FLASK_BASE_URL}/logout')

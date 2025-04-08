@@ -70,18 +70,17 @@ def index():
     session["hostname"] = hostname
 
     msg =  f"base_url:{base_url}, hostname:{hostname}"
-    print("msg: ", msg)
+    print("recieve request url: ", msg)
     return render_template("index.html")
     
 # Add `asset()` function and `is_production` to app context.
 @bp.context_processor
 def add_context():
-    print(f"hostname")
     
     def dev_asset(file_path):
         base_url = flask.request.base_url
         hostname = str(urllib.parse.urlparse(base_url).hostname)        
-        print(f"dev_assets:{base_url} {hostname}")
+        print(f"mdeditor dev_assets:{base_url} {hostname}")
         return f"/{FLASK_BASE_URL}/assets/{file_path}"
 
 
@@ -109,7 +108,7 @@ def save_markdown():
         return jsonify({"message": "No markdown received"}), 400
 
     # Save to file, DB, or wherever you want
-    with open(f"saved/{safe_name}", "w", encoding="utf-8") as f:
+    with open(f"/tmp/{safe_name}", "w", encoding="utf-8") as f:
         f.write(markdown)
 
     return jsonify({"message": "Markdown saved successfully!"})
