@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# install npm 
 # npm
 sudo apt install -y npm
 sudo npm i npm@11.2.0 -g
@@ -79,15 +80,15 @@ sudo nginx -t && sudo systemctl reload nginx
 
 #docker run --name $CONATINER_NAME -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm  $DOCKER_TTY node:22  bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base /$NGINX_DOMAIN"
 
-pnpm install
-npm run build
+pnpm install -C $DIR
+npm run build --prefic $DIR
 ln -s  $DIR/dist $DIR/mdeditor/
 
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+python3 -m venv $DIR/.venv
+source $DIR.venv/bin/activate
+pip install -r $DIR/requirements.txt
 
 #flask --debug --app main run --port $PORT --host 0.0.0.0 
 echo PORT $PORT 
 echo NGINX_DOMAIN $NGINX_DOMAIN
-gunicorn -w 1 --bind 0.0.0.0:$PORT main:app --env FLASK_BASE_URL="$NGINX_DOMAIN"
+cd $DIR && gunicorn -w 1 --bind 0.0.0.0:$PORT main:app --env FLASK_BASE_URL="$NGINX_DOMAIN"
