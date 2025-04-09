@@ -1,0 +1,17 @@
+syntax = "proto3";
+package  employee;
+import "google/protobuf/empty.proto";
+message Employee {
+    int32 id = 1;
+    string full_name = 2;
+    string email = 3;
+}
+
+message Employees {
+    repeated Employee employees = 1;
+}
+service ListEmployee {
+
+    rpc GetEmployees(google.protobuf.Empty) returns (stream Employees) {};
+}
+

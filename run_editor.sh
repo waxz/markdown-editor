@@ -64,6 +64,18 @@ echo NGINX_USER $NGINX_USER
 echo NGINX_PSW $NGINX_PSW
 echo CONATINER_NAME $CONATINER_NAME
 
+if [ ! -d "$DIR/proto/protoc" ]; then
+  wget https://github.com/protocolbuffers/protobuf/releases/download/v30.2/protoc-30.2-linux-x86_64.zip -O /tmp/protoc.zip
+  unzip -o /tmp/protoc.zip -d $DIR/proto/protoc
+fi
+if [ ! -d "$DIR/proto/protobuf-javascript" ]; then
+  wget https://github.com/protocolbuffers/protobuf-javascript/releases/download/v3.21.4/protobuf-javascript-3.21.4-linux-x86_64.zip -O /tmp/protobuf-javascript.zip
+  unzip -o /tmp/protobuf-javascript.zip -d $DIR/proto/protobuf-javascript
+fi
+if [ ! -f "$DIR/proto/protobuf-javascript/bin/protoc-gen-grpc-web" ]; then
+  wget https://github.com/grpc/grpc-web/releases/download/1.5.0/protoc-gen-grpc-web-1.5.0-linux-x86_64 -O $DIR/proto/protobuf-javascript/bin/protoc-gen-grpc-web
+  chmod +x $DIR/proto/protobuf-javascript/bin/*
+fi
 if [ ! -z "$CMD" ]; then
   echo run $CMD
   docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR --rm $DOCKER_TTY node:22 bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && $CMD "
@@ -93,7 +105,7 @@ sudo nginx -t && sudo systemctl reload nginx
 # pnpm install -C $DIR  && pnpm  -C $DIR start --host 0.0.0.0 --port 8005
 #docker run --name $CONATINER_NAME -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR -p $PORT:$PORT --rm $DOCKER_TTY node:22 bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && pnpm start --host 0.0.0.0 --port $PORT --base /$NGINX_DOMAIN"
 
-docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR --rm $DOCKER_TTY node:22 bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && pnpm install && npm run build"
+docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR --rm $DOCKER_TTY node:22 bash -c "$DIR/build-server.sh"
 
 #pnpm install -C $DIR
 #npm run build --prefic $DIR
