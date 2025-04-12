@@ -22,3 +22,13 @@ protoc -I=./proto ./proto/*.proto \
   --proto_path="$DIR/protoc/include" \
   --js_out=import_style=commonjs:${PROTO_DIR} \
   --grpc-web_out=import_style=typescript,mode=grpcwebtext:${PROTO_DIR}
+PROTO_DIR=./src/grpc/proto
+mkdir -p ${PROTO_DIR}
+
+protoc -I=./proto ./proto/*.proto \
+  --proto_path="$DIR/protoc/include" \
+  --js_out=import_style=typescript:${PROTO_DIR} \
+  --grpc-web_out=import_style=typescript,mode=grpcwebtext:${PROTO_DIR}
+
+
+ 

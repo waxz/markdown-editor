@@ -78,7 +78,7 @@ if [ ! -f "$DIR/proto/protobuf-javascript/bin/protoc-gen-grpc-web" ]; then
 fi
 if [ ! -z "$CMD" ]; then
   echo run $CMD
-  docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR --rm $DOCKER_TTY node:22 bash -c "npm install -g npm@11.2.0 && npm install -g pnpm && $CMD "
+  docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR --rm $DOCKER_TTY node:22 bash -c "$CMD "
 
   exit 0
 
