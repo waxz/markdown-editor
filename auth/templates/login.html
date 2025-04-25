@@ -15,13 +15,15 @@
 const url = new URL(document.URL);
 const host = url.host;
 
-const base = "/mdeditor";     // For socket.io path
+const base = "/" + url.pathname.split("/")[1];     // For socket.io path
+
 const namespace = "/api";     // Logical Socket.IO namespace
 
 // Full URL to connect to the namespace
 const socket = io("http://" + host + namespace, {
   path: base + "/socket.io",     // This is just the URL path to the Socket.IO server
-  transports: ['polling']
+  transports: ['websocket', 'polling']
+
 });
 
 // Handle connection

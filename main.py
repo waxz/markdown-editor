@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for
 from flask import Flask as flask, request, jsonify
-
+# from flask_restplus import Api
 from flask_session import Session
 from flask_protobuf import flask_protobuf as FlaskProtobuf
 import os
@@ -60,6 +60,9 @@ def page_not_found(error):
     return redirect(url_for("auth.login"))
 
 
+# rest api
+# api = Api(app)
+
 # declare FlaskProtobuf
 fb = FlaskProtobuf(app, parse_dict=True)
 
@@ -97,6 +100,10 @@ class MyNamespaceApi(Namespace):
     def on_message(self, msg):
         print('MyNamespaceApi: Received message:', msg)
         send(f"Echo: {msg}")  # Send a message back to the client
+
+    def user_id(self, data):
+        print(f"User {data} have been connected")
+        print(request.sid)
 
 
 # Register the namespace with Socket.IO
