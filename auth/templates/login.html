@@ -12,33 +12,33 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
+const url = new URL(document.URL);
+const host = url.host;
 
+const base = "/mdeditor";     // For socket.io path
+const namespace = "/api";     // Logical Socket.IO namespace
 
-    const url = new URL(document.URL);
-    const host = url.host;
-    const namespace = "/mdeditor"; // Specify the namespace you want to use
-
-
-    var io_path = "http://" + host + "{{url_for('index')}}" + "socket.io";
-    console.log("io_path: " + io_path); 
-
-    const socket = io("http://" + host, {
-     path: "{{url_for('index')}}" + 'socket.io',
-    transports: [ 'polling']
+// Full URL to connect to the namespace
+const socket = io("http://" + host + namespace, {
+  path: base + "/socket.io",     // This is just the URL path to the Socket.IO server
+  transports: ['polling']
 });
 
-    // Connect to the socket with the appropriate namespace
-    const socket_n = io("http://" + host + namespace, {
-        path: namespace + '/socket.io',  // Specify the namespace in the path
-        transports: ['polling']  // Use polling transport for compatibility
-    });
+// Handle connection
+socket.on('connect', () => {
+  console.log('✅ Connected to namespace:', namespace);
+  socket.send('Hello from the client!');
+});
 
-    socket.on('connect', () => console.log('✅ Connected'));
-    socket.on('disconnect', () => console.log('❌ Disconnected'));
-    socket.on('connect_error', err => console.error('⚠️ Connect error:', err));
-    socket_n.on('connect', () => console.log('✅ Connected'));
-    socket_n.on('disconnect', () => console.log('❌ Disconnected'));
-    socket_n.on('connect_error', err => console.error('⚠️ Connect error:', err));
+// Receive messages
+socket.on('message', (msg) => {
+  console.log('💬 Received:', msg);
+});
+
+// Handle errors
+socket.on('connect_error', (err) => {
+  console.error('⚠️ Connection error:', err);
+});
 </script>
 
 

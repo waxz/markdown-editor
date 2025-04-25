@@ -87,8 +87,21 @@ class MyNamespace(Namespace):
         print('MyNamespace: Received message:', msg)
         send(f"Echo: {msg}")  # Send a message back to the client
 
+class MyNamespaceApi(Namespace):
+    def on_connect(self):
+        print('MyNamespaceApi: Client connected to namespace')
+
+    def on_disconnect(self):
+        print('MyNamespaceApi: Client disconnected from namespace')
+
+    def on_message(self, msg):
+        print('MyNamespaceApi: Received message:', msg)
+        send(f"Echo: {msg}")  # Send a message back to the client
+
+
 # Register the namespace with Socket.IO
 socketio.on_namespace(MyNamespace('/mdeditor'))
+socketio.on_namespace(MyNamespaceApi('/api'))
 
 if __name__ == "__main__":
     # Normal entry pointd

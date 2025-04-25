@@ -7,6 +7,9 @@ import { insert, replaceAll } from "@milkdown/kit/utils";
 
 import { emoji } from "@milkdown/plugin-emoji";
 
+import {io} from "socket.io-client";
+
+
 
 import '@milkdown/crepe/theme/common/style.css'
 import '@milkdown/crepe/theme/frame.css';
@@ -37,6 +40,34 @@ console.log("User Agent: ", browserUserAgent);
 const isMObileDevice = navigator.maxTouchPoints > 1;
 console.log("isMObileDevice: ", isMObileDevice);
 
+// socketio
+const url = new URL(document.URL);
+const host = url.host;
+
+const base = "/mdeditor";     // For socket.io path
+const namespace = "/api";     // Logical Socket.IO namespace
+
+// Full URL to connect to the namespace
+const socket = io("http://" + host + namespace, {
+  path: base + "/socket.io",     // This is just the URL path to the Socket.IO server
+  transports: ['polling']
+});
+
+// Handle connection
+socket.on('connect', () => {
+  console.log('✅ Connected to namespace:', namespace);
+  socket.send('Hello from the client!');
+});
+
+// Receive messages
+socket.on('message', (msg) => {
+  console.log('💬 Received:', msg);
+});
+
+// Handle errors
+socket.on('connect_error', (err) => {
+  console.error('⚠️ Connection error:', err);
+});
 
 
 // display
