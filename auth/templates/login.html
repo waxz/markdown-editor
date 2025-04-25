@@ -16,6 +16,9 @@
 
     const url = new URL(document.URL);
     const host = url.host;
+    const namespace = "/mdeditor"; // Specify the namespace you want to use
+
+
     var io_path = "http://" + host + "{{url_for('index')}}" + "socket.io";
     console.log("io_path: " + io_path); 
 
@@ -24,10 +27,18 @@
     transports: [ 'polling']
 });
 
+    // Connect to the socket with the appropriate namespace
+    const socket_n = io("http://" + host + namespace, {
+        path: namespace + '/socket.io',  // Specify the namespace in the path
+        transports: ['polling']  // Use polling transport for compatibility
+    });
+
     socket.on('connect', () => console.log('✅ Connected'));
     socket.on('disconnect', () => console.log('❌ Disconnected'));
     socket.on('connect_error', err => console.error('⚠️ Connect error:', err));
-
+    socket_n.on('connect', () => console.log('✅ Connected'));
+    socket_n.on('disconnect', () => console.log('❌ Disconnected'));
+    socket_n.on('connect_error', err => console.error('⚠️ Connect error:', err));
 </script>
 
 

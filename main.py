@@ -9,7 +9,7 @@ import time
 import logging
 from flask_cors import CORS
 
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, Namespace
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -74,6 +74,21 @@ def index():
 def handle_message(msg):
     print('Received message:', msg)
     send(f"Echo: {msg}", broadcast=True)
+
+# Define the custom namespace
+class MyNamespace(Namespace):
+    def on_connect(self):
+        print('MyNamespace: Client connected to namespace')
+
+    def on_disconnect(self):
+        print('MyNamespace: Client disconnected from namespace')
+
+    def on_message(self, msg):
+        print('MyNamespace: Received message:', msg)
+        send(f"Echo: {msg}")  # Send a message back to the client
+
+# Register the namespace with Socket.IO
+socketio.on_namespace(MyNamespace('/mdeditor'))
 
 if __name__ == "__main__":
     # Normal entry pointd
