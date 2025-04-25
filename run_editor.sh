@@ -116,7 +116,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # python3 -m venv $DIR/.venv
 uv venv $DIR/.venv
 
-source $DIR.venv/bin/activate
+source $DIR/.venv/bin/activate
 # pip install -r $DIR/requirements.txt
 
 uv pip install -r $DIR/requirements.txt
