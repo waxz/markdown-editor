@@ -10,6 +10,27 @@
 
   <link rel="stylesheet" href="{{ asset('style.css') }}"> 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+
+
+    const url = new URL(document.URL);
+    const host = url.host;
+    var io_path = "http://" + host + "{{url_for('index')}}" + "socket.io";
+    console.log("io_path: " + io_path); 
+
+    const socket = io("http://" + host, {
+     path: "{{url_for('index')}}" + 'socket.io',
+    transports: [ 'polling']
+});
+
+    socket.on('connect', () => console.log('✅ Connected'));
+    socket.on('disconnect', () => console.log('❌ Disconnected'));
+    socket.on('connect_error', err => console.error('⚠️ Connect error:', err));
+
+</script>
+
+
  </head> 
 
  <body> <!-- partial:index.partial.html --> 
@@ -54,6 +75,11 @@
    </div> 
 
   </section> <!-- partial --> 
+
+  <h1>WebSocket Example</h1>
+  <input type="text" id="messageInput" placeholder="Enter message">
+  <button onclick="sendMessage()">Send</button>
+  <ul id="messages"></ul>
 
  </body>
 

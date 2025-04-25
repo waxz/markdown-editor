@@ -124,4 +124,5 @@ uv pip install -r $DIR/requirements.txt
 #flask --debug --app main run --port $PORT --host 0.0.0.0
 echo PORT $PORT
 echo NGINX_DOMAIN $NGINX_DOMAIN
-cd $DIR && gunicorn -k gevent -w 1 --bind 0.0.0.0:$PORT main:app --reload --env FLASK_BASE_URL="$NGINX_DOMAIN"
+# cd $DIR && gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --bind 0.0.0.0:$PORT main:app --reload --env FLASK_BASE_URL="$NGINX_DOMAIN"
+cd $DIR && gunicorn -k eventlet -w 1 --bind 0.0.0.0:$PORT main:app --reload --env FLASK_BASE_URL="$NGINX_DOMAIN"

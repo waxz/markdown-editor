@@ -9,6 +9,10 @@ MarkupSafe==2.1.5
 packaging==23.2
 Werkzeug==3.0.1
 gunicorn
+gevent
+eventlet
+gevent-websocket
 protobuf
 flask-protobuf
-flask_sockets
+flask-socketio     
+flask_cors

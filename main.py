@@ -4,6 +4,17 @@ from flask import Flask as flask, request, jsonify
 from flask_session import Session
 from flask_protobuf import flask_protobuf as FlaskProtobuf
 import os
+# from flask_sockets import Sockets
+import time
+import logging
+from flask_cors import CORS
+
+from flask_socketio import SocketIO, send
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
 
 
 from auth import auth
@@ -40,6 +51,9 @@ app.register_blueprint(
 )
 app.register_blueprint(auth.bp)
 
+CORS(app)
+
+socketio = SocketIO(app, path=f'/{FLASK_BASE_URL}/socket.io')
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -50,17 +64,18 @@ def page_not_found(error):
 fb = FlaskProtobuf(app, parse_dict=True)
 
 
-@app.route("/get-employee", methods=["POST"])
-@fb(employees)
+@app.route(f'/{FLASK_BASE_URL}/')
 def index():
-    print(233)
-    employees_array = request.data
-    for employee in employees_array:
-        print(employee)
+    """Serves a simple message indicating the server is running."""
+    return "Protobuf WebSocket Server is running. Connect via WebSocket client.", 200
 
-    return jsonify({"status": "SUCCESS"})
 
+@socketio.on('message')
+def handle_message(msg):
+    print('Received message:', msg)
+    send(f"Echo: {msg}", broadcast=True)
 
 if __name__ == "__main__":
-    # Normal entry point
+    # Normal entry pointd
     app.run()
+    # socketio.run(app)
