@@ -101,9 +101,10 @@ class MyNamespaceApi(Namespace):
         print('MyNamespaceApi: Received message:', msg)
         send(f"Echo: {msg}")  # Send a message back to the client
 
-    def user_id(self, data):
-        print(f"User {data} have been connected")
-        print(request.sid)
+    def on_chat(self, msg):
+        print('MyNamespaceApi on_chat: Received message:', msg)
+        send(f"Echo: {msg}")  # Send a message back to the client
+
 
 
 # Register the namespace with Socket.IO

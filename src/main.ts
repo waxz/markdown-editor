@@ -53,10 +53,17 @@ const socket = io("http://" + host + namespace, {
   transports: ['websocket', 'polling']
 });
 
+
+socket.on("chat", (arg) => {
+  console.log(arg); // world
+});
+
+
 // Handle connection
 socket.on('connect', () => {
   console.log('✅ Connected to namespace:', namespace);
   socket.send('Hello from the client!');
+  socket.emit("chat", "world");
 });
 
 // Receive messages
