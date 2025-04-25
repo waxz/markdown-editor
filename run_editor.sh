@@ -111,9 +111,15 @@ docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$C
 #npm run build --prefic $DIR
 if [ ! -d $DIR/mdeditor/dist ]; then ln -s $DIR/dist $DIR/mdeditor/; fi
 
-python3 -m venv $DIR/.venv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# python3 -m venv $DIR/.venv
+uv venv $DIR/.venv
+
 source $DIR.venv/bin/activate
-pip install -r $DIR/requirements.txt
+# pip install -r $DIR/requirements.txt
+
+uv pip install -r $DIR/requirements.txt
 
 #flask --debug --app main run --port $PORT --host 0.0.0.0
 echo PORT $PORT
