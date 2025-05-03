@@ -17,3 +17,9 @@ or
 ./run_editor.sh
 
 ```
+
+# generate html
+```
+docker run --name quartz_builder -v /tmp/quartz:/tmp/quartz -v ./content:/tmp/content -v ./quartz-dist:/tmp/output -w /tmp/quartz --rm  node:22 bash -c "npm install -g npm@11.2.0 && npm i && npx quartz build -d /tmp/content -o /tmp/output"
+```
+

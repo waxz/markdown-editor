@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 from auth import auth
 from mdeditor import mdeditor
+from quartz import quartz
 
 
 from api.employees_pb2 import Employees as employees
@@ -46,10 +47,9 @@ app.config["SESSION_TYPE"] = "filesystem"
 sess.init_app(app)
 
 # Provide Vite context processors and static assets directory.
-app.register_blueprint(
-    mdeditor.bp,
-)
+app.register_blueprint(mdeditor.bp)
 app.register_blueprint(auth.bp)
+app.register_blueprint(quartz.bp)
 
 CORS(app)
 
@@ -57,7 +57,8 @@ socketio = SocketIO(app, path=f'/{FLASK_BASE_URL}/socket.io')
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return redirect(url_for("auth.login"))
+    return f"{error}"
+    # return redirect(url_for("auth.login"))
 
 
 # rest api

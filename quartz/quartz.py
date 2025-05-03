@@ -1,4 +1,3 @@
-import functools , flask ,urllib.parse
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for,jsonify
 )
@@ -20,23 +19,16 @@ FLASK_BASE_URL = os.getenv("FLASK_BASE_URL", "mde")
 print(f"FLASK_BASE_URL: {FLASK_BASE_URL}")
 
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", "0")
-VITE_ORIGIN = os.getenv("VITE_ORIGIN", "http://localhost:8101")
-
 
 # Set application constants.
 is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
 is_production = FLASK_DEBUG != "1" or is_gunicorn
 project_path = Path(os.path.dirname(os.path.abspath(__file__)))
 
-
-
-
-
-bp = Blueprint('mdeditor', __name__,
-    template_folder='../templates/milk-dist',
-    static_folder='../templates/milk-dist/assets', static_url_path=f'/{FLASK_BASE_URL}/assets'
+bp = Blueprint('quartz', __name__,
+    template_folder='../templates',
+    static_folder='../templates/quartz-dist', static_url_path=f'/{FLASK_BASE_URL}/assets/quartz'
 )
-
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -58,8 +50,7 @@ def login_required(view):
 
     return wrapped_view
 
-
-@bp.get(f"/{FLASK_BASE_URL}/editor")
+@bp.get(f"/{FLASK_BASE_URL}/quartz", strict_slashes=False)
 def index():
     if not 'logged_in' in session:
         return redirect(url_for('auth.login'))
@@ -70,8 +61,41 @@ def index():
     session["hostname"] = hostname
 
     msg =  f"base_url:{base_url}, hostname:{hostname}"
-    print("recieve request url: ", msg)
-    return render_template("./milk-dist/index.html")
+    print("quartz recieve request url: ", msg)
+    html = render_template("./quartz-dist/index.html")
+    # print(html)
+    
+    return html
+@bp.get(f"/{FLASK_BASE_URL}/quartz/<path:filepath>")
+def file_index(filepath):
+    # return filepath;
+
+    if not 'logged_in' in session:
+        return redirect(url_for('auth.login'))
+
+    base_url = flask.request.base_url
+    hostname = str(urllib.parse.urlparse(base_url).hostname)
+    session["base_url"] = base_url
+    session["hostname"] = hostname
+
+    msg =  f"base_url:{base_url}, hostname:{hostname}"
+    print("quartz recieve request url: ", msg)
+    
+    try:
+        # Try rendering the template from the quartz-dist folder
+        template_path = f"./quartz-dist/{filepath}/index.html"
+        html = render_template(template_path)
+    except Exception as e:
+        # If the above fails, try looking for the template as a .html file
+        print(f"Error rendering template: {e}")
+        template_path = f"./quartz-dist/{filepath}.html"
+        try:
+            html = render_template(template_path)
+        except Exception as e:
+            print(f"Error rendering alternative template: {e}")
+            return f"Template not found: {filepath}", 404  # Return a 404 error if both fail
+
+    return html
     
 # Add `asset()` function and `is_production` to app context.
 @bp.context_processor
@@ -80,35 +104,11 @@ def add_context():
     def dev_asset(file_path):
         base_url = flask.request.base_url
         hostname = str(urllib.parse.urlparse(base_url).hostname)        
-        print(f"mdeditor dev_assets:{base_url} {hostname}")
-        return f"/{FLASK_BASE_URL}/assets/{file_path}"
+        print(f"quartz dev_assets:{base_url} {hostname}")
+        return f"/{FLASK_BASE_URL}/assets/quartz/{file_path}"
 
 
     return {
         "asset": dev_asset,
         "is_production":is_production,
     }
-
-@bp.route(f"/{FLASK_BASE_URL}/editor/md/save", methods=["POST"])
-def save_markdown():
-    user_id = session['user_id']
-    data = request.get_json()
-    markdown = data.get("markdown", "")
-
-    filename = data.get("filename", "untitled").strip()
-
-    if not filename:
-        filename = "untitled"
-
-    if not filename.endswith(".md"):
-        filename += ".md"
-
-    safe_name = filename.replace("/", "_")  # avoid path traversal
-    if not markdown:
-        return jsonify({"message": "No markdown received"}), 400
-
-    # Save to file, DB, or wherever you want
-    with open(f"/tmp/{safe_name}", "w", encoding="utf-8") as f:
-        f.write(markdown)
-
-    return jsonify({"message": "Markdown saved successfully!"})

@@ -41,8 +41,8 @@ except FileNotFoundError:
 
 bp = Blueprint('auth', __name__,
     #url_prefix = "/auth",
-    template_folder='templates',
-    static_folder='static', static_url_path=f'/{FLASK_BASE_URL}/assets/auth'
+    template_folder='../templates',
+    static_folder='../templates/auth/static', static_url_path=f'/{FLASK_BASE_URL}/assets/auth'
 )
 
 
@@ -79,7 +79,7 @@ def login():
     else:
         if session.get('logged_in'):
             return redirect(url_for('mdeditor.index'))
-    return render_template('login.html')
+    return render_template('./auth/login.html')
 
 @bp.route(f'/{FLASK_BASE_URL}/logout')
 def logout():

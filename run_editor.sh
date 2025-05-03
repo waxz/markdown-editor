@@ -107,9 +107,34 @@ sudo nginx -t && sudo systemctl reload nginx
 
 docker run --name $CONATINER_NAME -e NGINX_DOMAIN="$NGINX_DOMAIN" -v $CONTENT:$CONTENT -v $DIR:$DIR -w $DIR --rm $DOCKER_TTY node:22 bash -c "$DIR/build-server.sh"
 
+docker run --name quartz_builder -v /tmp/quartz:/tmp/quartz -v $DIR/content:/tmp/content -v $DIR/quartz-dist:/tmp/output -w /tmp/quartz --rm  node:22 bash -c "npm install -g npm@11.2.0 && npm i && npx quartz build -d /tmp/content -o /tmp/output"
+
 #pnpm install -C $DIR
 #npm run build --prefic $DIR
-if [ ! -d $DIR/mdeditor/dist ]; then ln -s $DIR/dist $DIR/mdeditor/; fi
+if [ ! -d $DIR/templates/milk-dist ];   then ln -s $DIR/dist         $DIR/templates/milk-dist; fi
+
+if [ ! -d $DIR/templates/quartz-dist ]; then ln -s $DIR/quartz-dist $DIR/templates/quartz-dist; fi
+
+sudo chown -R $USER:$USER $DIR/quartz-dist
+
+
+fix_base_path() { 
+    # Replace the link path in the HTML file
+    echo "fix_base_path" $1 #
+    sed -i 's#<link href=".*/index.css"#<link href="/mdeditor/assets/quartz/index.css"#' "$1"
+    sed -i 's#<script src=".*/prescript.js"#<script src="/mdeditor/assets/quartz/prescript.js"#' "$1"  
+    sed -i 's#<script src=".*/postscript.js"#<script src="/mdeditor/assets/quartz/postscript.js"#' "$1" 
+    sed -i 's#const fetchData = fetch("./static/contentIndex.json")#const fetchData = fetch("/mdeditor/assets/quartz/static/contentIndex.json")#' "$1" 
+    sed -i 's#href="./static/icon.png"#href="/mdeditor/assets/quartz/static/icon.png"#'  "$1"
+    # sed -i 's#<a href=".">Quartz 4</a>#<a href="/mdeditor/quartz">Quartz 4</a>#'  "$1"
+    sed  's#a href="\.\.#a href="/mdeditor/quartz#' "$1"
+    return 0 
+}
+
+export -f fix_base_path
+
+# Find all .html files and apply the fix_base_path function
+cd $DIR/templates/quartz-dist && find . -type f -name "*.html" -exec bash -c "fix_base_path {}" \;
 
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
